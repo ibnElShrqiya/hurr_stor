@@ -1,0 +1,6 @@
+// انسخ هذا الملف إلى config.js واستخدم رابط Supabase وanon/public key فقط.
+export const config = {
+  supabaseUrl: '',
+  supabaseAnonKey: '',
+  whatsappNumber: '' // صيغة دولية من دون + أو مسافات، مثال: 249XXXXXXXXX
+};
