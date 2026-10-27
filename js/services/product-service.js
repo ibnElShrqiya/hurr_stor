@@ -1,24 +1,11 @@
 import { supabase } from '../config/supabase-client.js';
-import { firestoreService } from './firestore-service.js';
+const fromRow = r => ({ id:r.id, name:r.name, englishName:r.english_name||'', categoryId:r.category_id||'', categoryName:r.category_name||'', image:r.image_url||'', originalPrice:Number(r.original_price ?? r.price), currentPrice:Number(r.price), shortDescription:r.short_description||'', description:r.description||'', stock:Number(r.stock)||0, published:Boolean(r.is_active), featured:Boolean(r.featured), createdAt:r.created_at });
+const toRow = p => ({ name:String(p.name||'').trim(), slug:String(p.slug||p.name||'').trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,''), english_name:p.englishName||null, category_id:p.categoryId||null, category_name:p.categoryName||null, image_url:p.image||null, original_price:Number(p.originalPrice ?? p.currentPrice), price:Number(p.currentPrice), short_description:p.shortDescription||'', description:String(p.description||p.shortDescription||p.name||''), stock:Math.max(0,Number(p.stock)||0), is_active:Boolean(p.published), featured:Boolean(p.featured), updated_at:new Date().toISOString() });
 export const productService = {
-  async list({ includeUnpublished = false } = {}) {
-    return firestoreService.list('products', { wherePublished: !includeUnpublished });
-  },
-  async get(id) { return firestoreService.get('products', String(id)); },
-  async save(product) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('سجّل الدخول بحساب المدير أولاً.');
-    return firestoreService.save('products', { ...product, id: String(product.id || `P${Date.now()}`) });
-  },
-  async remove(id) {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('سجّل الدخول بحساب المدير أولاً.');
-    return firestoreService.remove('products', String(id));
-  },
-  async updateStock(id, stock) {
-    const p = await this.get(id);
-    if (!p) throw new Error('المنتج غير موجود');
-    return this.save({ ...p, stock: Math.max(0, Number(stock) || 0) });
-  },
-  async reset() { throw new Error('إعادة الضبط غير متاحة.'); }
+ async list({includeUnpublished=false}={}) { let q=supabase.from('products').select('*').order('created_at',{ascending:false}); if(!includeUnpublished) q=q.eq('is_active',true); const {data,error}=await q; if(error) throw new Error(`تعذر تحميل المنتجات: ${error.message}`); return (data||[]).map(fromRow); },
+ async get(id) { const {data,error}=await supabase.from('products').select('*').eq('id',id).maybeSingle(); if(error) throw new Error(`تعذر تحميل المنتج: ${error.message}`); return data?fromRow(data):null; },
+ async save(product) { const {data:{user},error:authError}=await supabase.auth.getUser(); if(authError||!user) throw new Error('سجّل الدخول بحساب المدير أولاً.'); const row=toRow(product); let q=supabase.from('products'); q=product.id ? q.update(row).eq('id',product.id) : q.insert(row); const {data,error}=await q.select('*').single(); if(error) throw new Error(`تعذر حفظ المنتج: ${error.message}`); return fromRow(data); },
+ async remove(id) { const {error}=await supabase.from('products').delete().eq('id',id); if(error) throw new Error(`تعذر حذف المنتج: ${error.message}`); },
+ async updateStock(id,stock) { const {data,error}=await supabase.from('products').update({stock:Math.max(0,Number(stock)||0),updated_at:new Date().toISOString()}).eq('id',id).select('*').single(); if(error) throw new Error(`تعذر تحديث المخزون: ${error.message}`); return fromRow(data); },
+ async reset() { throw new Error('إعادة الضبط غير متاحة.'); }
 };

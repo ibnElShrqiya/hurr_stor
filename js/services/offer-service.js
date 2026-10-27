@@ -1,6 +1,3 @@
-import { SAMPLE_OFFERS } from '../data/offers.js';
-import { firestoreService } from './firestore-service.js';
-export const offerService = {
- async list({activeOnly=false}={}) { const rows=await firestoreService.list('offers'); const data=rows.length?rows:SAMPLE_OFFERS; const today=new Date().toISOString().slice(0,10); return data.filter(o=>!activeOnly||(o.active&&(!o.startDate||o.startDate<=today)&&(!o.endDate||o.endDate>=today))); },
- save: async o=>firestoreService.save('offers',o), remove: async id=>firestoreService.remove('offers',id)
-};
+import { supabase } from '../config/supabase-client.js';
+const map=r=>({id:r.id,title:r.title,description:r.description||'',productId:r.product_id,startDate:r.start_date,endDate:r.end_date,active:Boolean(r.is_active)});
+export const offerService={async list({activeOnly=false}={}){let q=supabase.from('offers').select('*').order('created_at',{ascending:false});if(activeOnly)q=q.eq('is_active',true);const {data,error}=await q;if(error)throw new Error(`تعذر تحميل العروض: ${error.message}`);const today=new Date().toISOString().slice(0,10);return (data||[]).map(map).filter(o=>!activeOnly||((!o.startDate||o.startDate<=today)&&(!o.endDate||o.endDate>=today)));},async save(o){const payload={title:o.title,description:o.description||'',product_id:o.productId,start_date:o.startDate||null,end_date:o.endDate||null,is_active:Boolean(o.active)};const q=o.id&&!String(o.id).startsWith('OFF')?supabase.from('offers').update(payload).eq('id',o.id):supabase.from('offers').insert(payload);const {data,error}=await q.select('*').single();if(error)throw new Error(`تعذر حفظ العرض: ${error.message}`);return map(data);},async remove(id){const {error}=await supabase.from('offers').delete().eq('id',id);if(error)throw new Error(`تعذر حذف العرض: ${error.message}`);}};

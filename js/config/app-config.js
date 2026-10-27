@@ -4,6 +4,6 @@ export const APP_CONFIG = Object.freeze({
   currency: 'EGP',
   locale: 'ar-EG',
   whatsappNumber: '', // Add the official international number without + or spaces.
-  demoMode: true,
+  demoMode: false,
   storagePrefix: 'hurr-demo-v1'
 });
