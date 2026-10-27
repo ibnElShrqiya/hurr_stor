@@ -1,11 +1,42 @@
-import { SAMPLE_PRODUCTS } from '../data/products.js';
-import { storage } from './storage-service.js';
-const all=()=>storage.get('products',SAMPLE_PRODUCTS);
-export const productService={
- async list({includeUnpublished=false}={}){return all().filter(p=>includeUnpublished||p.published)},
- async get(id){return all().find(p=>p.id===id)||null},
- async save(product){const items=all();const i=items.findIndex(p=>p.id===product.id);if(i>=0)items[i]={...items[i],...product};else items.unshift({...product,id:product.id||`P${Date.now()}`});storage.set('products',items);return product},
- async remove(id){storage.set('products',all().filter(p=>p.id!==id));},
- async updateStock(id,stock){const p=all().find(x=>x.id===id);if(!p)throw Error('المنتج غير موجود');p.stock=Math.max(0,Number(stock)||0);storage.set('products',all());return p},
- async reset(){storage.set('products',SAMPLE_PRODUCTS)}
+import { db, auth } from '../config/firebase-client.js';
+import { collection, getDocs, getDoc, doc, setDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js';
+
+const productsRef = collection(db, 'products');
+const isAdmin = () => Boolean(auth.currentUser);
+async function cloudAll(includeUnpublished = false) {
+  const q = includeUnpublished && isAdmin() ? productsRef : query(productsRef, where('published', '==', true));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+export const productService = {
+  async list({ includeUnpublished = false } = {}) {
+    try { return await cloudAll(includeUnpublished); }
+    catch (error) {
+      console.error('Firestore products read failed:', error);
+      throw error;
+    }
+  },
+  async get(id) {
+    try {
+      const snap = await getDoc(doc(db, 'products', String(id)));
+      if (snap.exists()) return { id: snap.id, ...snap.data() };
+    } catch (error) { console.error('Firestore product read failed:', error); throw error; }
+    return null;
+  },
+  async save(product) {
+    if (!auth.currentUser) throw new Error('سجّل الدخول بحساب مدير معتمد قبل تعديل المنتجات.');
+    const id = String(product.id || `P${Date.now()}`);
+    await setDoc(doc(db, 'products', id), { ...product, id, updatedAt: new Date().toISOString() }, { merge: true });
+    return { ...product, id };
+  },
+  async remove(id) {
+    if (!auth.currentUser) throw new Error('يجب تسجيل الدخول كمدير لحذف المنتجات.');
+    await deleteDoc(doc(db, 'products', String(id)));
+  },
+  async updateStock(id, stock) {
+    const p = await this.get(id);
+    if (!p) throw new Error('المنتج غير موجود');
+    return this.save({ ...p, stock: Math.max(0, Number(stock) || 0) });
+  },
+  async reset() { throw new Error('إعادة الضبط المحلية لا تُستخدم مع قاعدة بيانات المتجر.'); }
 };
