@@ -1,0 +1,2 @@
+import { SAMPLE_OFFERS } from '../data/offers.js';import { storage } from './storage-service.js';
+const all=()=>storage.get('offers',SAMPLE_OFFERS);export const offerService={list:async({activeOnly=false}={})=>all().filter(o=>!activeOnly||(o.active&&o.startDate<=new Date().toISOString().slice(0,10)&&o.endDate>=new Date().toISOString().slice(0,10))),save:async o=>{const a=all(),i=a.findIndex(x=>x.id===o.id);if(i>=0)a[i]=o;else a.unshift({...o,id:o.id||`OFF${Date.now()}`});storage.set('offers',a);return o},remove:async id=>storage.set('offers',all().filter(o=>o.id!==id))};

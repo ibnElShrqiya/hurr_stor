@@ -1,0 +1,1 @@
+export function money(n){return new Intl.NumberFormat('ar-EG',{style:'currency',currency:'EGP',maximumFractionDigits:0}).format(Number(n)||0)}export function discountPercent(original,current){return original>current?Math.round((1-current/original)*100):0}

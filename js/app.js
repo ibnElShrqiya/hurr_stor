@@ -1,0 +1,9 @@
+import { renderHeader } from './components/header.js';import { renderFooter } from './components/footer.js';import { APP_CONFIG } from './config/app-config.js';import { notify } from './components/notifications.js';import { cartService } from './services/cart-service.js';
+const page=document.body.dataset.page||'';
+function theme(){const saved=localStorage.getItem('hurr-theme');document.documentElement.dataset.theme=saved||'dark';document.addEventListener('click',e=>{if(e.target.closest('#theme-toggle')){const next=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=next;localStorage.setItem('hurr-theme',next)}})}
+function whatsapp(){let a=document.querySelector('[data-whatsapp]');if(!a)return;const number=APP_CONFIG.whatsappNumber;if(!/^\d{8,15}$/.test(number)){a.hidden=true;return}a.href=`https://wa.me/${number}`;a.hidden=false}
+function updateCounts(){document.querySelectorAll('[data-cart-count]').forEach(e=>e.textContent=cartService.count())}
+renderHeader(page);renderFooter();theme();whatsapp();updateCounts();
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-add]');if(!b)return;try{await cartService.add(b.dataset.add,1);updateCounts();notify('أُضيف المنتج إلى السلة.','success')}catch(err){notify(err.message||'تعذرت إضافة المنتج.','error')}});
+const routes={home:'./storefront/home.js',shop:'./storefront/shop.js',product:'./storefront/product.js',offers:'./storefront/offers.js',cart:'./storefront/cart.js',checkout:'./storefront/checkout.js',success:'./storefront/order-success.js',contact:'./storefront/contact.js',about:'./storefront/static-pages.js',privacy:'./storefront/static-pages.js',shipping:'./storefront/static-pages.js',returns:'./storefront/static-pages.js'};
+if(routes[page])import(routes[page]).then(m=>m.init?.(page)).catch(err=>{console.error(err);notify('تعذر تحميل الصفحة. أعد تحميلها أو راجع سجل المتصفح.','error')});

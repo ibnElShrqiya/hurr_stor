@@ -1,0 +1,6 @@
+// Prices, descriptions and stock below are editable SAMPLE DATA, not verified commercial facts.
+export const SAMPLE_PRODUCTS = [
+ {id:'P001',name:'الصديق',englishName:'Al-Siddiq',categoryId:'unisex',categoryName:'عطور للجنسين',shortDescription:'إصدار تأسيسي من هوية حُرّ العربية.',description:'عطر من المجموعة التأسيسية لعلامة حُرّ. حدّث وصف المنتج ومواصفاته الفعلية قبل الإطلاق التجاري.',image:'',originalPrice:850,currentPrice:720,stock:12,published:true,featured:true,createdAt:'2026-01-01'},
+ {id:'P002',name:'الفاروق',englishName:'Al-Farouq',categoryId:'men',categoryName:'عطور الرجال',shortDescription:'حضور عربي بطابع فاخر.',description:'عطر رجالي من المجموعة التأسيسية لعلامة حُرّ. حدّث وصف المنتج ومواصفاته الفعلية قبل الإطلاق التجاري.',image:'',originalPrice:900,currentPrice:900,stock:8,published:true,featured:true,createdAt:'2026-01-02'},
+ {id:'P003',name:'حفيدات عائشة',englishName:'Hafidat Aisha',categoryId:'women',categoryName:'عطور النساء',shortDescription:'إصدار نسائي من المجموعة التأسيسية.',description:'عطر نسائي من المجموعة التأسيسية لعلامة حُرّ. حدّث وصف المنتج ومواصفاته الفعلية قبل الإطلاق التجاري.',image:'',originalPrice:780,currentPrice:680,stock:5,published:true,featured:true,createdAt:'2026-01-03'}
+];

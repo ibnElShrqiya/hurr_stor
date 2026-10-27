@@ -1,0 +1,3 @@
+import { SAMPLE_CATEGORIES } from '../data/categories.js';import { storage } from './storage-service.js';import { productService } from './product-service.js';
+const all=()=>storage.get('categories',SAMPLE_CATEGORIES);
+export const categoryService={list:async()=>all(),save:async c=>{const a=all(),i=a.findIndex(x=>x.id===c.id);if(i>=0)a[i]=c;else a.push({...c,id:c.id||`CAT${Date.now()}`});storage.set('categories',a);return c},remove:async id=>{const used=(await productService.list({includeUnpublished:true})).some(p=>p.categoryId===id);if(used)throw Error('لا يمكن حذف قسم مرتبط بمنتجات؛ انقل المنتجات أولاً.');storage.set('categories',all().filter(c=>c.id!==id))}};

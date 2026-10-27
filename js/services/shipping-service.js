@@ -1,0 +1,2 @@
+import { SAMPLE_SHIPPING_RATES } from '../data/shipping-rates.js';import { storage } from './storage-service.js';
+const all=()=>storage.get('shipping',SAMPLE_SHIPPING_RATES);export const shippingService={list:async()=>all(),rate:async gov=>all().find(x=>x.governorate===gov&&x.active)?.rate??null,save:async item=>{const a=all(),i=a.findIndex(x=>x.governorate===item.governorate);if(i>=0)a[i]=item;else a.push(item);storage.set('shipping',a)},saveAll:async a=>storage.set('shipping',a)};
