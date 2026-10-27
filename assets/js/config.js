@@ -2,5 +2,5 @@
 export const config = {
   supabaseUrl: 'https://axbumspgqeauqtjrqezu.supabase.co',
   supabaseAnonKey: 'sb_publishable_2cGvciFsWgJ6MbAHwxJTpA_dbI3tV_i',
-  whatsappNumber: '+201101774594'
+  whatsappNumber: '201101774594'
 };
