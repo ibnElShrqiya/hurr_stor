@@ -70,9 +70,76 @@ create policy "Admins manage products" on public.products for all to authenticat
 grant select on public.products to anon, authenticated;
 grant insert, update, delete on public.products to authenticated;
 
+-- Tables used by the current offer, coupon, shipping, and settings services.
+create table if not exists public.offers (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text not null default '',
+  product_id uuid references public.products(id) on delete set null,
+  start_date date,
+  end_date date,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create table if not exists public.coupons (
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
+  discount_type text not null check (discount_type in ('percent','fixed')),
+  discount_value numeric not null check (discount_value > 0),
+  min_order numeric not null default 0,
+  max_uses integer not null default 0,
+  used_count integer not null default 0,
+  start_date date,
+  end_date date,
+  is_active boolean not null default true,
+  combine_offers boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create table if not exists public.shipping_rates (
+  governorate text primary key,
+  rate numeric not null default 0 check (rate >= 0),
+  active boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+create table if not exists public.store_settings (
+  id text primary key,
+  settings jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.offers enable row level security;
+alter table public.coupons enable row level security;
+alter table public.shipping_rates enable row level security;
+alter table public.store_settings enable row level security;
+
+drop policy if exists "Public can view active offers" on public.offers;
+drop policy if exists "Admins manage offers" on public.offers;
+create policy "Public can view active offers" on public.offers for select to anon, authenticated using (is_active or (select public.is_hurr_admin()));
+create policy "Admins manage offers" on public.offers for all to authenticated using ((select public.is_hurr_admin())) with check ((select public.is_hurr_admin()));
+
+drop policy if exists "Public can read coupons for checkout preview" on public.coupons;
+drop policy if exists "Admins manage coupons" on public.coupons;
+create policy "Public can read coupons for checkout preview" on public.coupons for select to anon, authenticated using (is_active or (select public.is_hurr_admin()));
+create policy "Admins manage coupons" on public.coupons for all to authenticated using ((select public.is_hurr_admin())) with check ((select public.is_hurr_admin()));
+
+drop policy if exists "Public can view active shipping rates" on public.shipping_rates;
+drop policy if exists "Admins manage shipping rates" on public.shipping_rates;
+create policy "Public can view active shipping rates" on public.shipping_rates for select to anon, authenticated using (active or (select public.is_hurr_admin()));
+create policy "Admins manage shipping rates" on public.shipping_rates for all to authenticated using ((select public.is_hurr_admin())) with check ((select public.is_hurr_admin()));
+
+drop policy if exists "Public can read store settings" on public.store_settings;
+drop policy if exists "Admins manage store settings" on public.store_settings;
+create policy "Public can read store settings" on public.store_settings for select to anon, authenticated using (true);
+create policy "Admins manage store settings" on public.store_settings for all to authenticated using ((select public.is_hurr_admin())) with check ((select public.is_hurr_admin()));
+
+grant select on public.offers, public.coupons, public.shipping_rates, public.store_settings to anon, authenticated;
+grant insert, update, delete on public.offers, public.coupons, public.shipping_rates, public.store_settings to authenticated;
 insert into public.categories (id, name, active) values ('men','عطور الرجال',true),('women','عطور النساء',true),('unisex','عطور للجنسين',true) on conflict (id) do nothing;
 notify pgrst, 'reload schema';
 commit;
+
 
 
 
