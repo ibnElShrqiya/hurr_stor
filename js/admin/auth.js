@@ -1,34 +1,55 @@
 import { notify } from '../components/notifications.js';
-import { auth, db } from '../config/firebase-client.js';
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js';
+import { supabase } from '../config/supabase-client.js';
+
 async function hasAdminRole(user) {
   if (!user) return false;
-  const snap = await getDoc(doc(db, 'admins', user.uid));
-  return snap.exists() && snap.data().role === 'admin';
+  const { data, error } = await supabase.from('admins').select('role').eq('id', user.id).maybeSingle();
+  if (error) throw new Error(`تعذر التحقق من صلاحية المدير: ${error.message}`);
+  return data?.role === 'admin';
 }
+
 export const adminAuth = {
-  isLoggedIn: () => Boolean(auth.currentUser),
+  isLoggedIn: async () => Boolean((await supabase.auth.getUser()).data.user),
   login: async (email, password) => {
-    const credential = await signInWithEmailAndPassword(auth, email, password);
-    if (!(await hasAdminRole(credential.user))) { await signOut(auth); throw new Error('هذا الحساب غير مخوّل لإدارة المتجر. أضف UID الحساب في admins من وحدة تحكم Firebase.'); }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw new Error(error.message === 'Invalid login credentials' ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة.' : error.message);
+    try {
+      if (!(await hasAdminRole(data.user))) {
+        await supabase.auth.signOut();
+        throw new Error('الحساب غير مخوّل للإدارة. تأكد من وجود سجل المدير في جدول admins وأن id يساوي UID المستخدم وrole تساوي admin.');
+      }
+    } catch (e) {
+      if (e.message.includes('غير مخوّل')) throw e;
+      await supabase.auth.signOut();
+      throw e;
+    }
     return true;
   },
-  logout: async () => { await signOut(auth); location.href = 'index.html'; },
-  guard: () => new Promise(resolve => {
-    const unsubscribe = onAuthStateChanged(auth, async user => {
-      unsubscribe();
-      if (!user) { location.replace('index.html'); resolve(false); return; }
-      try { if (await hasAdminRole(user)) resolve(true); else { await signOut(auth); location.replace('index.html'); resolve(false); } }
-      catch { location.replace('index.html'); resolve(false); }
-    });
-  })
+  logout: async () => { await supabase.auth.signOut(); location.href = 'index.html'; },
+  guard: async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) { location.replace('index.html'); return false; }
+    try {
+      if (await hasAdminRole(data.user)) return true;
+      await supabase.auth.signOut();
+    } catch (e) { console.error(e); }
+    location.replace('index.html');
+    return false;
+  }
 };
+
 export function bindLogin() {
   document.querySelector('#admin-login-form')?.addEventListener('submit', async e => {
-    e.preventDefault(); const form=e.currentTarget; const data=new FormData(form); const button=form.querySelector('button[type="submit"],button:not([type])'); if(button)button.disabled=true;
-    try { await adminAuth.login(String(data.get('email')).trim(),String(data.get('password'))); location.href='dashboard.html'; }
-    catch(error) { notify(error?.code==='auth/invalid-credential'?'البريد الإلكتروني أو كلمة المرور غير صحيحة.':(error.message||'تعذر تسجيل الدخول.'),'error'); }
-    finally { if(button)button.disabled=false; }
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const button = form.querySelector('button[type="submit"],button:not([type])');
+    if (button) button.disabled = true;
+    try {
+      await adminAuth.login(String(data.get('email')).trim(), String(data.get('password')));
+      location.href = 'dashboard.html';
+    } catch (error) {
+      notify(error.message || 'تعذر تسجيل الدخول. تأكد من إعداد Supabase Auth والجداول وسياسات RLS.', 'error');
+    } finally { if (button) button.disabled = false; }
   });
 }

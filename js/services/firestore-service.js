@@ -1,23 +1,29 @@
-import { db } from '../config/firebase-client.js';
-import { collection, getDocs, getDoc, doc, setDoc, deleteDoc, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js';
+import { supabase } from '../config/supabase-client.js';
 
+// اسماء الجداول مطابقة لأسماء المجموعات التي كان يستخدمها إصدار Firebase.
 export const firestoreService = {
   async list(name, { wherePublished = false, sortField = null } = {}) {
-    let q = collection(db, name);
-    if (wherePublished) q = query(q, where('published', '==', true));
-    if (sortField) q = query(q, orderBy(sortField, 'desc'));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    let request = supabase.from(name).select('*');
+    if (wherePublished) request = request.eq('published', true);
+    if (sortField) request = request.order(sortField, { ascending: false });
+    const { data, error } = await request;
+    if (error) throw new Error(`Supabase (${name}): ${error.message}`);
+    return data || [];
   },
   async get(name, id) {
-    const snap = await getDoc(doc(db, name, String(id)));
-    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+    const { data, error } = await supabase.from(name).select('*').eq('id', String(id)).maybeSingle();
+    if (error) throw new Error(`Supabase (${name}): ${error.message}`);
+    return data;
   },
   async save(name, item, idField = 'id') {
     const id = String(item[idField] || `${name.slice(0, 3).toUpperCase()}${Date.now()}`);
     const data = { ...item, [idField]: id, updatedAt: new Date().toISOString() };
-    await setDoc(doc(db, name, id), data, { merge: true });
-    return data;
+    const { data: saved, error } = await supabase.from(name).upsert(data, { onConflict: idField }).select().single();
+    if (error) throw new Error(`Supabase (${name}): ${error.message}`);
+    return saved;
   },
-  async remove(name, id) { await deleteDoc(doc(db, name, String(id))); }
+  async remove(name, id) {
+    const { error } = await supabase.from(name).delete().eq('id', String(id));
+    if (error) throw new Error(`Supabase (${name}): ${error.message}`);
+  }
 };
