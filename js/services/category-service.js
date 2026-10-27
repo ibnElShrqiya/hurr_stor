@@ -1,4 +1,3 @@
-import { SAMPLE_CATEGORIES } from '../data/categories.js';
 import { supabase } from '../config/supabase-client.js';
 import { productService } from './product-service.js';
 const map = r => ({ id: r.id, name: r.name, active: r.active });
@@ -6,7 +5,7 @@ export const categoryService = {
   async list() {
     const { data, error } = await supabase.from('categories').select('*').order('name');
     if (error) throw new Error(`تعذر تحميل الأقسام: ${error.message}`);
-    return data?.length ? data.map(map) : SAMPLE_CATEGORIES;
+    return (data || []).map(map);
   },
   async save(category) {
     const row = {
