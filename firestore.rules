@@ -2,21 +2,34 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function isAdmin() {
-      return request.auth != null && request.auth.token.admin == true;
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'admin';
     }
-
-    match /products/{productId} {
-      allow read: if (isAdmin() || resource.data.published == true);
+    match /admins/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, create, update, delete: if false;
+    }
+    match /products/{id} {
+      allow read: if isAdmin() || resource.data.published == true;
       allow create, update, delete: if isAdmin();
     }
-
-    // Orders must be created/validated by a trusted server or Cloud Function.
-    match /orders/{orderId} {
-      allow read, write: if false;
+    match /categories/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /offers/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /coupons/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /shipping/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /settings/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /orders/{id} {
+      allow create: if request.resource.data.keys().hasAll(['id','name','phone','governorate','city','address','items','subtotal','shipping','discount','total','status','createdAt','verificationRequired'])
+        && request.resource.data.id == id
+        && request.resource.data.name is string && request.resource.data.name.size() > 1
+        && request.resource.data.phone is string && request.resource.data.phone.size() >= 7
+        && request.resource.data.items is list && request.resource.data.items.size() > 0
+        && request.resource.data.items.size() <= 30
+        && request.resource.data.total is number && request.resource.data.total >= 0
+        && request.resource.data.verificationRequired == true;
+      allow read, update, delete: if isAdmin();
     }
-
-    match /{document=**} {
-      allow read, write: if false;
-    }
+    match /{document=**} { allow read, write: if false; }
   }
 }

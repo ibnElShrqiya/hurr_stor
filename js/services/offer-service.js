@@ -1,2 +1,6 @@
-import { SAMPLE_OFFERS } from '../data/offers.js';import { storage } from './storage-service.js';
-const all=()=>storage.get('offers',SAMPLE_OFFERS);export const offerService={list:async({activeOnly=false}={})=>all().filter(o=>!activeOnly||(o.active&&o.startDate<=new Date().toISOString().slice(0,10)&&o.endDate>=new Date().toISOString().slice(0,10))),save:async o=>{const a=all(),i=a.findIndex(x=>x.id===o.id);if(i>=0)a[i]=o;else a.unshift({...o,id:o.id||`OFF${Date.now()}`});storage.set('offers',a);return o},remove:async id=>storage.set('offers',all().filter(o=>o.id!==id))};
+import { SAMPLE_OFFERS } from '../data/offers.js';
+import { firestoreService } from './firestore-service.js';
+export const offerService = {
+ async list({activeOnly=false}={}) { const rows=await firestoreService.list('offers'); const data=rows.length?rows:SAMPLE_OFFERS; const today=new Date().toISOString().slice(0,10); return data.filter(o=>!activeOnly||(o.active&&(!o.startDate||o.startDate<=today)&&(!o.endDate||o.endDate>=today))); },
+ save: async o=>firestoreService.save('offers',o), remove: async id=>firestoreService.remove('offers',id)
+};
