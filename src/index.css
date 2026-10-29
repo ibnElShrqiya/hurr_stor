@@ -1,0 +1,303 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Alexandria', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Amiri', 'Traditional Arabic', Georgia, serif;
+  --font-cinzel: 'Cinzel', serif;
+  
+  --color-gold-200: #f3dfa2;
+  --color-gold-300: #e5c378;
+  --color-gold-400: #d4af37;
+  --color-gold-500: #c5a059;
+  --color-gold-600: #a98338;
+  --color-gold-700: #886523;
+  
+  --color-obsidian: #080808;
+  --color-charcoal-900: #0e0e0e;
+  --color-charcoal-800: #141414;
+  --color-charcoal-700: #1c1c1c;
+  --color-charcoal-600: #262626;
+
+  --color-ivory: #EDE8DC;
+  --color-ivory-light: #FBF9F5;
+  --color-ivory-dim: #C5BFB0;
+}
+
+/* Custom Gold Foil Text Gradient */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #FFF3D1 0%, #D4AF37 50%, #A98338 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-gradient-border {
+  border-image: linear-gradient(to right, rgba(197, 160, 89, 0.1), rgba(197, 160, 89, 0.6), rgba(197, 160, 89, 0.1)) 1;
+}
+
+/* Smooth luxury scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080808;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 4px;
+  border: 1px solid #141414;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C5A059;
+}
+
+/* Luxury card glass reflections */
+.royal-glass {
+  background: rgba(18, 18, 18, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(197, 160, 89, 0.15);
+}
+
+.royal-glass-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.royal-glass-hover:hover {
+  border-color: rgba(197, 160, 89, 0.45);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.7), 0 0 20px 0 rgba(197, 160, 89, 0.08);
+}
+
+
+/* Light theme defaults and readable contrast for the storefront. */
+html, body, #root { min-height: 100%; }
+html, body { background: #f7f4ec; color: #28251f; }
+.hurr-app.light-mode { background: #f7f4ec !important; color: #28251f !important; }
+/* Keep horizontal scrolling inside navigation/filter strips, never on the page. */
+html, body, #root, .hurr-app { width: 100%; max-width: 100%; }
+body { overflow-x: hidden; }
+.hurr-app main { min-width: 0; }
+.hurr-app img, .hurr-app video, .hurr-app canvas, .hurr-app svg { max-width: 100%; }
+.hurr-app.light-mode [class~="bg-[#080808]"],
+.hurr-app.light-mode [class~="bg-[#0A0A0A]"],
+.hurr-app.light-mode [class~="bg-[#0a0a0a]"],
+.hurr-app.light-mode [class~="bg-[#0e0e0e]"],
+.hurr-app.light-mode [class~="bg-[#111111]"],
+.hurr-app.light-mode [class~="bg-[#111]"],
+.hurr-app.light-mode [class~="bg-[#121212]"],
+.hurr-app.light-mode [class~="bg-[#141414]"],
+.hurr-app.light-mode [class~="bg-[#161616]"],
+.hurr-app.light-mode [class~="bg-[#181818]"],
+.hurr-app.light-mode [class~="bg-[#1A1A1A]"],
+.hurr-app.light-mode [class~="bg-[#1a1a1a]"],
+.hurr-app.light-mode [class~="bg-[#1c1c1c]"],
+.hurr-app.light-mode [class~="bg-[#222]"],
+.hurr-app.light-mode [class~="bg-[#222222]"],
+.hurr-app.light-mode [class~="bg-[#262626]"],
+.hurr-app.light-mode [class~="bg-[#333]"] { background-color: #fffdf8 !important; }
+.hurr-app.light-mode [class*="bg-[#070707]"],
+.hurr-app.light-mode [class*="bg-[#080808]"],
+.hurr-app.light-mode [class*="bg-[#0A0A0A]"],
+.hurr-app.light-mode [class*="bg-[#0a0a0a]"],
+.hurr-app.light-mode [class*="bg-[#0D0D0D]"],
+.hurr-app.light-mode [class*="bg-[#0E0E0E]"],
+.hurr-app.light-mode [class*="bg-[#0e0e0e]"],
+.hurr-app.light-mode [class*="bg-[#101010]"],
+.hurr-app.light-mode [class*="bg-[#111111]"],
+.hurr-app.light-mode [class*="bg-[#121212]"],
+.hurr-app.light-mode [class*="bg-[#12110F]"],
+.hurr-app.light-mode [class*="bg-[#131313]"],
+.hurr-app.light-mode [class*="bg-[#14120C]"],
+.hurr-app.light-mode [class*="bg-[#141414]"],
+.hurr-app.light-mode [class*="bg-[#16140F]"],
+.hurr-app.light-mode [class*="bg-[#161512]"],
+.hurr-app.light-mode [class*="bg-[#161616]"],
+.hurr-app.light-mode [class*="bg-[#181611]"],
+.hurr-app.light-mode [class*="bg-[#181818]"],
+.hurr-app.light-mode [class*="bg-[#1A1813]"],
+.hurr-app.light-mode [class*="bg-[#1A1916]"],
+.hurr-app.light-mode [class*="bg-[#1A1A1A]"],
+.hurr-app.light-mode [class*="bg-[#1C1A14]"],
+.hurr-app.light-mode [class*="bg-[#1C1A16]"],
+.hurr-app.light-mode [class*="bg-[#1a1a1a]"],
+.hurr-app.light-mode [class*="bg-[#1C1C1C]"],
+.hurr-app.light-mode [class*="bg-[#1c1c1c]"],
+.hurr-app.light-mode [class*="bg-[#1E1E1E]"],
+.hurr-app.light-mode [class*="bg-[#25221B]"],
+.hurr-app.light-mode [class*="bg-[#222]"],
+.hurr-app.light-mode [class*="bg-[#222222]"],
+.hurr-app.light-mode [class*="bg-[#252525]"],
+.hurr-app.light-mode [class*="bg-[#262626]"],
+.hurr-app.light-mode [class*="bg-[#333]"] { background-color: #fffdf8 !important; }
+.hurr-app.light-mode [class~="text-[#777]"],
+.hurr-app.light-mode [class~="text-[#777777]"],
+.hurr-app.light-mode [class~="text-[#888]"],
+.hurr-app.light-mode [class~="text-[#888888]"],
+.hurr-app.light-mode [class~="text-[#8A8275]"],
+.hurr-app.light-mode [class~="text-[#A69F90]"],
+.hurr-app.light-mode [class~="text-[#B0A99B]"],
+.hurr-app.light-mode [class~="text-[#C8C2B3]"],
+.hurr-app.light-mode [class~="text-[#EDE8DC]"],
+.hurr-app.light-mode [class~="text-[#FBF9F5]"] { color: #39352d !important; }
+.hurr-app.light-mode [class~="border-[#222]"],
+.hurr-app.light-mode [class~="border-[#262626]"],
+.hurr-app.light-mode [class~="border-[#1c1c1c]"],
+.hurr-app.light-mode [class~="border-[#333]"] { border-color: #e4dccb !important; }
+.hurr-app.light-mode header, .hurr-app.light-mode footer {
+  background-color: rgba(247, 244, 236, .97) !important; color: #28251f !important;
+}
+.hurr-app.light-mode .theme-nav-toggle { color: #785b24 !important; }
+.hurr-app.light-mode .gold-gradient-border { border-image-source: linear-gradient(to right, #e4dccb, #c5a059, #e4dccb); }
+.hurr-app.light-mode .royal-glass { background: rgba(255, 253, 248, .88); border-color: #e4dccb; }
+.hurr-app.light-mode [class*="from-[#12110D]"],
+.hurr-app.light-mode [class*="via-[#1A1812]"],
+.hurr-app.light-mode [class*="to-[#12110D]"] { --tw-gradient-from: #fffdf8 var(--tw-gradient-from-position); --tw-gradient-via: #f3eddf var(--tw-gradient-via-position); --tw-gradient-to: #fffdf8 var(--tw-gradient-to-position); }
+.hurr-app.light-mode .mobile-category-strip {
+  background-color: #f7f4ec !important;
+  border-color: #e4dccb !important;
+}
+.hurr-app.light-mode .mobile-category-strip button:not([aria-pressed="true"]) {
+  background-color: #fffdf8 !important;
+  color: #5d5548 !important;
+  border: 1px solid #e4dccb;
+}
+.hurr-app.light-mode .mobile-category-strip button[aria-pressed="true"] {
+  background: linear-gradient(to right, #c5a059, #d4af37) !important;
+  color: #211b10 !important;
+}
+.hurr-app.light-mode section.bg-\[\#080808\] { background-color: #f7f4ec !important; }
+.hurr-app.light-mode section.bg-\[\#0A0A0A\] { background-color: #f7f4ec !important; }
+.hurr-app.light-mode [class*="bg-[#121212]/80"] {
+  background-color: rgba(255, 253, 248, .92) !important;
+}
+.hurr-app.light-mode .gold-gradient-text {
+  background: linear-gradient(135deg, #a98338 0%, #9a7428 50%, #76551d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hurr-app.light-mode input, .hurr-app.light-mode textarea, .hurr-app.light-mode select {
+  background-color: #fffdf8 !important; color: #28251f !important; border-color: #d9cfbc !important;
+}
+.hurr-app.light-mode .hurr-theme-toggle { background: #fffdf8 !important; color: #6f531d !important; }
+
+@media (max-width: 639px) {
+  .hurr-app header > div:first-child { gap: .5rem; }
+  .hurr-app header > div:first-child > div:last-child { gap: .25rem; }
+  .hurr-app header > div:first-child > div:last-child > button { padding: .45rem; }
+  .hurr-app section { min-width: 0; }
+  .hurr-app section h1, .hurr-app section h2, .hurr-app section p { overflow-wrap: anywhere; }
+  .hurr-app .mobile-category-strip { overscroll-behavior-inline: contain; }
+}
+
+
+/* Launch-ready responsive admin workspace */
+.admin-shell { min-height: 100dvh; overflow-x: clip; background: #080808 !important; color: #EDE8DC !important; }
+.admin-dashboard { min-width: 0; }
+.admin-dashboard input, .admin-dashboard select, .admin-dashboard textarea { max-width: 100%; min-width: 0; }
+.admin-dashboard table { width: 100%; }
+@media (max-width: 640px) {
+  .admin-dashboard { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+  .admin-dashboard h1 { font-size: 1.15rem; line-height: 1.7; }
+  .admin-dashboard .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+  .admin-dashboard button { touch-action: manipulation; }
+}
+
+
+/* Mobile-first layout hardening for real devices (320px–640px). */
+*, *::before, *::after { box-sizing: border-box; }
+html { overflow-x: clip; -webkit-text-size-adjust: 100%; }
+body, #root, .hurr-app { min-width: 0; overflow-x: clip; }
+.hurr-app main, .hurr-app section, .hurr-app footer, .hurr-app header { min-width: 0; max-width: 100%; }
+.hurr-app main > * { min-width: 0; max-width: 100%; }
+.hurr-app p, .hurr-app h1, .hurr-app h2, .hurr-app h3, .hurr-app label, .hurr-app td, .hurr-app th { overflow-wrap: anywhere; }
+.hurr-app input, .hurr-app textarea, .hurr-app select { min-width: 0; max-width: 100%; }
+
+@media (max-width: 639px) {
+  .hurr-app header > div:first-child {
+    height: auto !important;
+    min-height: 64px;
+    padding: .5rem .75rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: .5rem;
+  }
+  .hurr-app header > div:first-child > div:first-child {
+    flex: 1 1 115px;
+    min-width: 0;
+    max-width: 48%;
+  }
+  .hurr-app header > div:first-child > div:first-child a,
+  .hurr-app header > div:first-child > div:first-child a > * { max-width: 100%; min-width: 0; }
+  .hurr-app header > div:first-child > div:last-child {
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: .25rem;
+  }
+  .hurr-app header > div:first-child > div:last-child > button,
+  .hurr-app header > div:first-child > div:last-child > a {
+    padding: .45rem;
+    min-width: 34px;
+    min-height: 34px;
+  }
+  .hurr-app .mobile-category-strip { padding-inline: .75rem; max-width: 100%; }
+  .hurr-app section { padding-inline: 1rem; }
+  .hurr-app section h1 { font-size: clamp(1.7rem, 7vw, 2.35rem); line-height: 1.35; }
+  .hurr-app section h2 { font-size: clamp(1.3rem, 5.5vw, 1.8rem); line-height: 1.45; }
+  .hurr-app section p { font-size: .95rem; line-height: 1.85; }
+  .hurr-app section .grid { min-width: 0; }
+  .hurr-app section button { max-width: 100%; white-space: normal; }
+  .hurr-app section .overflow-x-auto { max-width: 100%; overscroll-behavior-x: contain; }
+  .hurr-app section .max-w-7xl,
+  .hurr-app section .max-w-3xl,
+  .hurr-app section .max-w-2xl,
+  .hurr-app section .max-w-xl { max-width: 100%; }
+  .hurr-app footer > div { min-width: 0; }
+  .admin-dashboard { padding-inline: .75rem !important; }
+  .admin-dashboard .grid { min-width: 0; }
+  .admin-dashboard table { min-width: 620px; }
+  .admin-dashboard .overflow-x-auto { width: 100%; max-width: 100%; }
+  .admin-dashboard form, .admin-dashboard [role="dialog"] { max-width: calc(100vw - 1.25rem); }
+}
+
+@media (max-width: 380px) {
+  .hurr-app header > div:first-child { padding-inline: .5rem; }
+  .hurr-app header > div:first-child > div:first-child { flex-basis: 100px; }
+  .hurr-app header > div:first-child > div:last-child { gap: .1rem; }
+  .hurr-app header > div:first-child > div:last-child > button,
+  .hurr-app header > div:first-child > div:last-child > a { padding: .35rem; min-width: 30px; min-height: 30px; }
+  .hurr-app section { padding-inline: .75rem; }
+}
+
+
+/* Premium mobile storefront refinements: compact, product-forward and thumb-friendly. */
+@media (max-width: 639px) {
+  .hurr-app #catalog-section { padding-top: 1.5rem; padding-bottom: 2rem; }
+  .hurr-app #catalog-section > div:first-child { padding-bottom: .9rem; gap: .75rem; }
+  .hurr-app #catalog-section .grid { gap: .7rem; }
+  .hurr-app article.group { border-radius: .8rem; }
+  .hurr-app article.group > div:first-child { aspect-ratio: 1 / 1; padding: .45rem; }
+  .hurr-app article.group > div:first-child button { width: 1.8rem; height: 1.8rem; top: .45rem; left: .45rem; }
+  .hurr-app article.group > div:last-child { padding: .65rem; gap: .45rem; }
+  .hurr-app article.group h3 { font-size: .92rem; line-height: 1.5; }
+  .hurr-app article.group p { font-size: .72rem; line-height: 1.65; }
+  .hurr-app article.group .pt-2, .hurr-app article.group .pt-3 { padding-top: .5rem; }
+  .hurr-app article.group button { min-height: 2.15rem; padding: .45rem .55rem; font-size: .7rem; }
+  .hurr-app section#catalog-section { padding-inline: .75rem; }
+  .hurr-app section#catalog-section .grid-cols-1 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hurr-app section#catalog-section .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.15rem; }
+  .hurr-app section#catalog-section .text-base { font-size: .9rem; }
+  .hurr-app .mobile-category-strip { padding-top: .45rem; padding-bottom: .45rem; gap: .4rem; }
+  .hurr-app .mobile-category-strip button { padding: .4rem .65rem; font-size: .72rem; }
+  .hurr-app header > div:first-child { min-height: 58px; padding-block: .35rem; }
+  .hurr-app #catalog-section button, .hurr-app header button { touch-action: manipulation; }
+}
